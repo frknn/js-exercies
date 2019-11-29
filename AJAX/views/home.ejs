@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        #buttons, #xhr, #fetch, #jquery, #axios{
+            margin: 20px 20px;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        p{
+            font-size: 30px;
+        }
+    </style>
+    <title>AJAX Intro</title>
+</head>
+<body>
+    <div id ="buttons">
+        <button id="xhr" type="button" class="btn btn-success">XHR</button>
+        <button id="fetch" type="button" class="btn btn-warning">FETCH</button>
+        <button id="jquery" type="button" class="btn btn-danger">JQUERY</button>
+        <button id="axios" type="button" class="btn btn-primary">AXIOS</button>
+        <p><strong>Type: </strong><p id="type"></p></p>
+        <p><strong>Text: </strong><p id="text"></p></p>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var url = "https://api.github.com/users/frknn";
+        var xhrbtn = document.querySelector("#xhr");
+        var fetchbtn = document.querySelector("#fetch");
+        var axiosbtn = document.querySelector("#axios");
+        var text = document.querySelector("#text");
+        var type = document.querySelector("#type");
+
+        //XHR request -- En uzun syntax
+        xhrbtn.addEventListener("click",function(){
+            var XHR = new XMLHttpRequest();
+
+            XHR.onreadystatechange = function(){
+                if(XHR.readyState == 4 && XHR.status == 200){
+                    console.log(XHR.responseText);
+                    type.innerText = typeof(XHR.responseText);
+                    var jsonFormatted = JSON.parse(XHR.responseText);
+                    text.innerText = jsonFormatted.login;
+                }
+            }
+
+            XHR.open("GET",url);
+            XHR.send();
+        });
+
+        //Fetch request -- IE'de çalışmayabilir.
+        fetchbtn.addEventListener("click",function(){
+            fetch(url)
+            .then(function(req){
+                req.json().then(function(data){
+                    console.log(data);
+                    type.innerText = typeof(data);
+                    text.innerText = data.login;
+                })
+            })
+            .catch(function(){
+                alert("ERROR!");
+            })
+        });
+
+        //JQuery request -- Temiz ve kısa syntax, sadece ajax için kullanılması çok iyi olmaz.
+        $("#jquery").click(function(){
+            $.getJSON(url)
+            .done(function(data){
+                console.log(data);
+                $("#type").text(typeof(data));
+                $("#text").text(data.login);
+            })
+        })
+
+        //Axios request -- Temiz ve kısa, jquery benzer fakat sadece AJAX için yapılmış
+        axiosbtn.addEventListener("click",function(){
+            axios.get(url)
+            .then(function(res){
+                console.log(res.data);
+                type.innerText = typeof(res.data);
+                text.innerText = res.data.login;
+            })
+            .catch(function(error){
+                console.log(error);
+            })
+        });
+
+    </script>
+</body>
+</html>
